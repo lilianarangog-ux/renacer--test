@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RENACER — Test de Eneagrama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://openfpcdn.io/fingerprintjs/v4/iife.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Plus Jakarta Sans',system-ui,sans-serif;
+  --ink:#0f0f0f;
+  --ink2:#4a4a4a;
+  --ink3:#888;
+  --sand:#f7f4ef;
+  --sand2:#ede9e1;
+  --sand3:#e0dbd0;
+  --gold:#b5862a;
+  --gold2:#d4a846;
+  --gold-light:#fdf6e3;
+  --purple:#6b5ce7;
+  --purple2:#5548d4;
+  --purple-light:#f0eeff;
+  --white:#ffffff;
+  --border:#ddd8ce;
+  --radius:12px;
+  --radius-lg:18px;
+  --shadow:0 4px 24px rgba(0,0,0,.07);
+  --shadow-lg:0 12px 48px rgba(0,0,0,.12);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  background:var(--sand);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(181,134,42,.06) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(107,92,231,.05) 0%, transparent 50%);
+}
+.wrap{max-width:620px;margin:0 auto;padding:3rem 1.5rem 5rem}
+.eyebrow{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px}
+.eyebrow::before,.eyebrow::after{content:'';flex:1;height:1px;background:var(--border)}
+h1{font-family:var(--serif);font-size:clamp(32px,7vw,50px);line-height:1.1;color:var(--ink);margin-bottom:1.25rem;font-weight:400}
+h1 em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:2rem;font-weight:300}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem 1.6rem;margin-bottom:.85rem;box-shadow:var(--shadow)}
+.card-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:.6rem}
+.card-text{font-size:14px;color:var(--ink2);line-height:1.8;font-weight:300}
+.scale-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:1rem 0 .5rem}
+.sr-item{background:var(--sand);border:1px solid var(--border);border-radius:10px;padding:12px 4px;text-align:center}
+.sr-n{font-family:var(--serif);font-size:20px;color:var(--gold);margin-bottom:4px;line-height:1}
+.sr-l{font-size:9.5px;color:var(--ink3);line-height:1.3}
+.meta{font-size:12.5px;color:var(--ink3);text-align:center;margin-bottom:1.75rem;padding:10px;background:var(--sand2);border-radius:8px;letter-spacing:.2px}
+.btn-main{width:100%;padding:16px;border:none;border-radius:var(--radius);font-size:15px;font-family:var(--sans);cursor:pointer;font-weight:600;background:var(--ink);color:var(--white);letter-spacing:.3px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:.5rem}
+.btn-main:hover{background:#333;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.btn-main:active{transform:translateY(0)}
+.btn-sec{width:100%;padding:14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--sans);cursor:pointer;font-weight:500;background:var(--white);color:var(--ink2);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:.5rem}
+.btn-sec:hover{background:var(--sand);border-color:var(--sand3)}
+.section-head{font-family:var(--serif);font-size:28px;color:var(--ink);margin-bottom:.4rem;font-weight:400}
+.section-sub{font-size:14px;color:var(--ink3);margin-bottom:1.75rem;line-height:1.7;font-weight:300}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink3);margin-bottom:7px;font-weight:600}
+.field input,.field select{
+  width:100%;padding:13px 16px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  font-size:15px;font-family:var(--sans);
+  color:var(--ink);background:var(--white);
+  transition:all .15s;font-weight:300;
+  appearance:none;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(181,134,42,.1)}
+.field input::placeholder{color:var(--ink3)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err-msg{color:#c0392b;font-size:12.5px;margin-bottom:.75rem;display:none;padding:10px 14px;background:#fdf0ef;border-radius:8px;border-left:3px solid #c0392b}
+.prog-wrap{margin-bottom:2rem}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.prog-label{font-size:12.5px;color:var(--ink3);font-weight:500}
+.prog-pct{font-size:12.5px;font-weight:700;color:var(--gold)}
+.prog-track{height:2px;background:var(--border);border-radius:2px}
+.prog-fill{height:2px;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .5s cubic-bezier(.4,0,.2,1)}
+.q-tag{display:inline-block;font-size:10px;padding:4px 12px;border-radius:20px;background:var(--gold-light);color:var(--gold);font-weight:600;letter-spacing:.5px;margin-bottom:1rem;border:1px solid rgba(181,134,42,.2)}
+.q-text{font-family:var(--serif);font-size:clamp(17px,3.5vw,21px);color:var(--ink);line-height:1.55;margin-bottom:2rem;font-weight:400}
+.scale-btns{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:2rem}
+.sb{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:16px 5px;
+  cursor:pointer;text-align:center;
+  transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;
+}
+.sb:hover{border-color:var(--gold2);background:var(--gold-light)}
+.sb.sel{border-color:var(--gold);background:var(--gold-light);border-width:2px;box-shadow:0 0 0 3px rgba(181,134,42,.1)}
+.sb-n{font-family:var(--serif);font-size:22px;color:var(--ink);line-height:1;transition:color .15s}
+.sb.sel .sb-n{color:var(--gold)}
+.sb-l{font-size:9.5px;color:var(--ink3);line-height:1.3}
+.nav{display:flex;gap:10px;align-items:center}
+.nav-prev{border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 20px;font-size:13.5px;font-family:var(--sans);cursor:pointer;background:var(--white);color:var(--ink2);transition:all .15s;font-weight:500;white-space:nowrap}
+.nav-prev:hover:not(:disabled){background:var(--sand)}
+.nav-prev:disabled{opacity:.3;cursor:default}
+.nav-next{flex:1;border:none;border-radius:var(--radius);padding:13px;font-size:14px;font-family:var(--sans);cursor:pointer;background:var(--ink);color:var(--white);transition:all .15s;font-weight:600}
+.nav-next:hover:not(:disabled){background:#333}
+.nav-next:disabled{opacity:.3;cursor:default}
+.res-hero{border-radius:var(--radius-lg);padding:2.25rem;margin-bottom:1rem;border:1px solid transparent;position:relative;overflow:hidden}
+.res-hero::after{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+.res-greeting{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:.6rem;opacity:.8;font-weight:600}
+.res-num{font-family:var(--serif);font-size:64px;line-height:1;margin-bottom:.2rem}
+.res-name{font-family:var(--serif);font-size:30px;margin-bottom:.2rem;font-weight:400}
+.res-alias{font-size:13px;margin-bottom:1.25rem;opacity:.7;letter-spacing:.3px}
+.res-desc{font-size:14px;line-height:1.8;opacity:.88;font-weight:300}
+.rc{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.6rem;margin-bottom:.85rem;box-shadow:var(--shadow)}
+.rc-title{font-family:var(--serif);font-size:21px;color:var(--ink);margin-bottom:1rem;font-weight:400}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cell{background:var(--sand);border-radius:10px;padding:13px 15px}
+.cl{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-weight:600}
+.cv{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
+.sl{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin:.9rem 0 .5rem;font-weight:600}
+.def-block{border-left:2px solid var(--border);padding-left:14px;margin-bottom:.85rem}
+.def-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700}
+.def-txt{font-size:13.5px;color:var(--ink2);line-height:1.75;font-weight:300}
+.st-card{background:var(--sand);border-radius:10px;padding:14px 16px;margin-bottom:7px}
+.st-l{font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700}
+.st-t{font-size:13px;color:var(--ink2);line-height:1.65;font-weight:300}
+.srow{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.slbl{font-size:12px;width:120px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;font-weight:400}
+.strk{flex:1;height:4px;background:var(--border);border-radius:3px}
+.sfill{height:4px;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.snum{font-size:11px;color:var(--ink3);width:24px;text-align:right;flex-shrink:0}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.5rem}
+.tag{padding:5px 13px;border-radius:20px;font-size:12px;border:1px solid var(--border);color:var(--ink2);background:var(--white);font-weight:400}
+.quote{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink2);border-left:2px solid var(--gold);padding-left:14px;margin-bottom:12px;line-height:1.6}
+.rec{background:var(--sand);border-radius:10px;padding:14px 16px;margin-bottom:8px}
+.rec-t{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.rec-d{font-size:13px;color:var(--ink2);line-height:1.65;font-weight:300}
+.sign-row{font-size:13px;color:var(--ink2);padding:5px 0 5px 13px;margin-bottom:5px;line-height:1.5;border-left:2px solid;font-weight:300}
+.divider{border:none;border-top:1px solid var(--border);margin:1rem 0}
+.action-btn{width:100%;border-radius:var(--radius);padding:15px;font-size:14.5px;font-family:var(--sans);cursor:pointer;font-weight:600;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:.6rem;transition:all .2s;border:1.5px solid transparent;letter-spacing:.2px}
+.action-btn:active{transform:scale(.98)}
+.ab-primary{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.ab-primary:hover{background:#333}
+.ab-secondary{background:var(--white);color:var(--ink2);border-color:var(--border)}
+.ab-secondary:hover{background:var(--sand)}
+.footer{text-align:center;padding:2.5rem 0 1rem;font-size:11.5px;color:var(--ink3);letter-spacing:.2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+/* ── PDF LOADING OVERLAY ── */
+#pdf-loading{display:none;position:fixed;inset:0;background:rgba(15,15,15,.82);z-index:99999;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#pdf-loading.active{display:flex}
+.pdf-spinner{width:44px;height:44px;border:3px solid rgba(181,134,42,.25);border-top-color:#b5862a;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pdf-loading-txt{font-family:var(--sans);font-size:14px;color:#fff;font-weight:500;letter-spacing:.3px}
+.pdf-loading-sub{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.55);font-weight:300}
+/* ── CONTENEDOR INVISIBLE PARA EXPORTAR ── */
+#pdf-export-container{position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-1;font-family:'Helvetica Neue',Arial,sans-serif}
+.animate-in{animation:fadeUp .4s ease forwards}
+@media(max-width:480px){
+  .field-row{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .scale-btns{gap:5px}
+  .sb{padding:12px 3px}
+  .sb-n{font-size:19px}
+  .sb-l{font-size:9px}
+  .wrap{padding:2rem 1.1rem 4rem}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<!-- Overlay de loading PDF -->
+<div id="pdf-loading">
+  <div class="pdf-spinner"></div>
+  <div class="pdf-loading-txt">Generando tu perfil PDF…</div>
+  <div class="pdf-loading-sub">Esto puede tomar unos segundos</div>
+</div>
+<!-- Contenedor oculto para exportación -->
+<div id="pdf-export-container"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// ⚙️  CONFIGURACIÓN
+// ══════════════════════════════════════════════════════════
+const CONFIG = {
+  SHEET_URL: "https://script.google.com/macros/s/AKfycbxcIjaROXt0qUNPHiop597u14ni4lysShqGo4AgaQZqLoGmMbqlWWLSqiBZgacP4JQ/exec",
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxcIjaROXt0qUNPHiop597u14ni4lysShqGo4AgaQZqLoGmMbqlWWLSqiBZgacP4JQ/exec",
+  BRAND: "RENACER — Test de Eneagrama"
+};
+
+// ── TIPOS ──
+const T={
+1:{name:"El Perfeccionista",alias:"El Reformador",triada:"visceral",col:"#E8F7F0",ct:"#085041",cb:"#1D9E75",
+  int:7,des:4,pasion:"Ira contenida",virtud:"Serenidad",
+  miedo:"Ser corrupto, defectuoso o malvado",deseo:"Ser íntegro, bueno y tener la razón",
+  herida:"Sentiste desde pequeño que debías ser bueno para ser amado. El error no era un tropiezo — era una amenaza a tu valor como persona.",
+  mecanismo:"Formación reactiva: transforma impulsos inaceptables en su opuesto. El enojo se vuelve paciencia forzada. El deseo se convierte en disciplina.",
+  relaciones:"Eres leal y comprometido, pero puedes ser crítico y exigente. Tiendes a corregir más que a celebrar. Necesitas aprender a amar lo imperfecto.",
+  intDesc:"En crecimiento aparece una ligereza que normalmente te niegas. Puedes disfrutar sin justificarte y reírte de ti mismo con genuina ternura.",
+  desDesc:"Bajo estrés caes en melancolía y el sentido de ser fundamentalmente defectuoso. Te aíslas y pierdes tu capacidad de actuar.",
+  signInt:["Puedes equivocarte sin hundirte","Disfrutas el presente sin agenda","Ríes de tus propias imperfecciones"],
+  signDes:["Te vuelves hipersensible e incomprendido","La autocrítica se vuelve paralizante","Sientes que algo en ti está fundamentalmente roto"],
+  fortalezas:["Integridad profunda","Sentido del deber","Ética genuina","Perseverancia","Atención al detalle"],
+  sombras:["Rigidez","Autocrítica destructiva","Resentimiento reprimido","Hipercrítica hacia otros","Dificultad para relajarse"],
+  frases:["Había una manera correcta de hacerlo y no se hizo.","No puedo descansar sabiendo que algo está mal.","Me exijo porque sé que puedo dar más."],
+  recomendaciones:[
+    {t:"Practica la autocompasión activa",d:"El error no define tu valor. Date el mismo permiso que le darías a alguien que amas profundamente."},
+    {t:"Distingue la crítica del juicio",d:"Señalar que algo puede mejorar es útil. Condenar es completamente distinto."},
+    {t:"Conecta con tu cuerpo",d:"Tu tensión se acumula físicamente. El movimiento y la respiración son medicinas reales para ti."}
+  ],
+  st:{cons:"Preocupación ansiosa: Canaliza la perfección hacia su propio mundo — cuerpo, casa, salud, finanzas. Muy rígido en sus rutinas. Su angustia se acumula adentro.",
+     soc:"Inadaptabilidad: El reformador social que señala lo que está mal en el sistema. Su ira es indignación moral dirigida hacia el mundo externo.",
+     sex:"Celo: La perfección se vuelve pasión hacia la pareja. Quiere transformar e impulsar al otro. El más intenso del tipo 1."}
+},
+2:{name:"El Ayudador",alias:"El Altruista",triada:"emocional",col:"#FDF3E3",ct:"#633806",cb:"#BA7517",
+  int:4,des:8,pasion:"Orgullo",virtud:"Humildad",
+  miedo:"Ser indigno de amor o innecesario",deseo:"Sentirse amado, valorado y necesitado",
+  herida:"Aprendiste que el amor se gana sirviéndolo. En algún momento sentiste que solo eras bienvenido cuando eras útil.",
+  mecanismo:"Represión: suprime sus propias necesidades para enfocarse en las de los demás, creyendo que eso mantiene el amor y la conexión.",
+  relaciones:"Eres cálido e intuitivo, pero puedes volverte posesivo o resentido cuando sientes que no recibes lo que diste. Tu generosidad a veces esconde una cuenta pendiente.",
+  intDesc:"En crecimiento puedes conectar con tus emociones más profundas sin necesitar que otros las validen. Descubres quién eres más allá de tu función.",
+  desDesc:"Bajo estrés te vuelves agresivo y controlador. Exiges lo que sientes que te deben con una intensidad que puede destruir relaciones.",
+  signInt:["Puedes recibir sin sentirte en deuda","Reconoces tus emociones antes de servir las ajenas","Dices no sin culpa paralizante"],
+  signDes:["Tu generosidad se vuelve manipulación velada","Exiges reconocimiento con intensidad creciente","El resentimiento silencioso te consume"],
+  fortalezas:["Empatía profunda","Calor genuino","Intuición emocional","Generosidad real","Capacidad de cuidar"],
+  sombras:["Necesidad de ser necesitado","Dificultad para recibir","Resentimiento oculto","Manipulación inconsciente","Pérdida de identidad propia"],
+  frases:["Lo hago porque me importa, no porque espere algo.","¿Por qué nadie pregunta cómo estoy yo?","Cuando estoy bien, todos están bien."],
+  recomendaciones:[
+    {t:"Aprende a recibir",d:"Aceptar ayuda no es debilidad — es confianza. Y confiar es la forma más profunda de amar."},
+    {t:"Pregúntate qué necesitas tú",d:"Antes de preguntar qué necesitan los demás, hazte esa pregunta a ti mismo. Es el primer acto de amor propio real."},
+    {t:"Revisa tus expectativas ocultas",d:"Cuando das esperando algo de vuelta, no es generosidad — es una transacción disfrazada. La diferencia importa."}
+  ],
+  st:{cons:"Privilegio: Cuida con intensidad pero espera un trato preferencial a cambio. Mezcla generosidad con demanda de reconocimiento.",
+     soc:"Ambición: Se conecta con personas influyentes y obtiene poder a través de su utilidad. El más orientado al estatus del tipo 2.",
+     sex:"Seducción: Se vuelve irresistible para la persona elegida. Su amor es intenso y a veces asfixiante. Quiere ser el centro del mundo del otro."}
+},
+3:{name:"El Triunfador",alias:"El Logrador",triada:"emocional",col:"#FFF8E7",ct:"#5C3A00",cb:"#D4900A",
+  int:6,des:9,pasion:"Engaño",virtud:"Autenticidad",
+  miedo:"Ser un fracaso o carecer de valor",deseo:"Ser exitoso, admirado y valioso",
+  herida:"Aprendiste que el amor venía por lo que lograba, no por lo que era. Te convertiste en tu desempeño.",
+  mecanismo:"Identificación: se funde con sus roles y logros hasta perder contacto con su esencia real. La imagen se vuelve la identidad.",
+  relaciones:"Eres magnético y eficiente, pero puedes sacrificar la intimidad por la imagen. Tu pareja puede sentir que ama a la versión pública de ti, no a quien eres en privado.",
+  intDesc:"En crecimiento puedes ser profundamente leal, cooperativo y presente sin necesitar el protagonismo ni el reconocimiento.",
+  desDesc:"Bajo estrés te disocías, te vuelves apático y evitas cualquier responsabilidad como si de repente nada importara.",
+  signInt:["Puedes estar presente sin agenda","La lealtad importa más que el reconocimiento","Tu valor no depende de lo que produces"],
+  signDes:["Te desconectas emocionalmente de todo","La procrastinación reemplaza la acción","Te vuelves invisible para evitar el fracaso"],
+  fortalezas:["Capacidad de ejecución","Adaptabilidad","Carisma natural","Energía y determinación","Visión de resultados"],
+  sombras:["Vacío de identidad","Adicción al logro","Dificultad para ser vulnerable","Imagen sobre sustancia","Competitividad dañina"],
+  frases:["Si no estoy produciendo, siento que no existo.","Me resulta difícil saber qué siento realmente.","Necesito que vean lo que hice, no solo lo que soy."],
+  recomendaciones:[
+    {t:"Pregúntate quién eres sin tus logros",d:"No para asustarte, sino para encontrar la parte de ti que nadie puede quitarte porque nunca tuvo que ganarse."},
+    {t:"Practica la vulnerabilidad elegida",d:"Mostrar que no sabes, que tienes miedo o que necesitas ayuda no daña tu imagen — la hace humana y real."},
+    {t:"Desacelera deliberadamente",d:"El espacio vacío no es improductivo. A veces es donde aparece lo que más importa."}
+  ],
+  st:{cons:"Vanidad de seguridad: Acumula logros como escudo contra la inseguridad. Muy orientado a la imagen personal y material.",
+     soc:"Prestigio: El éxito es social. Títulos, reconocimiento público y reputación son su moneda. El más orientado al estatus.",
+     sex:"Masculinidad/Feminidad: Proyecta la imagen ideal de lo que debe ser atractivo para la persona deseada. El más camaleónico del tipo 3."}
+},
+4:{name:"El Individualista",alias:"El Romántico",triada:"emocional",col:"#F3EEFF",ct:"#3A1A6E",cb:"#7B4FC9",
+  int:1,des:2,pasion:"Envidia",virtud:"Ecuanimidad",
+  miedo:"No tener identidad propia o carecer de significado",deseo:"Encontrarse a sí mismo y su significado único",
+  herida:"Sentiste que algo en ti estaba fundamentalmente incompleto, y que los demás tenían algo que a ti siempre te faltaba.",
+  mecanismo:"Introyección: internaliza todo lo externo como parte de su identidad emocional. El mundo no le pasa cerca — le pasa dentro.",
+  relaciones:"Eres profundo e intenso, pero la idealización seguida de decepción puede crear ciclos dolorosos. Tu anhelo de conexión puede ahuyentar lo que más deseas.",
+  intDesc:"En crecimiento puedes actuar desde valores claros y disciplina real sin que el estado emocional lo determine todo.",
+  desDesc:"Bajo estrés te vuelves dependiente y extremadamente necesitado de atención externa para llenar un vacío que se siente insoportable.",
+  signInt:["Actúas aunque no te 'sientas listo'","Tu valor no depende de ser único","Puedes estar presente sin drama"],
+  signDes:["El dolor se vuelve tu identidad","Buscas rescate en otros para lo que solo tú puedes darte","La envidia paralizante reemplaza la acción"],
+  fortalezas:["Profundidad emocional","Creatividad auténtica","Empatía hacia el sufrimiento","Sensibilidad estética","Capacidad de transformar el dolor"],
+  sombras:["Melancolía habitual","Envidia disimulada","Hipersensibilidad","Idealización y decepción cíclica","Ensimismamiento"],
+  frases:["Nadie entiende realmente lo que siento.","Lo que tengo nunca es suficiente comparado con lo que podría ser.","Mi dolor tiene una textura que otros no conocen."],
+  recomendaciones:[
+    {t:"Diferencia intensidad de profundidad",d:"No todo lo doloroso es profundo. Y no todo lo tranquilo es superficial. La estabilidad también puede ser bella."},
+    {t:"Actúa sin esperar el estado perfecto",d:"El momento ideal para crear, conectar o avanzar no llega solo. Se construye en movimiento, no en espera."},
+    {t:"Observa la envidia como brújula",d:"Lo que envidias te dice lo que quieres. En lugar de paralizarte, úsalo como dirección."}
+  ],
+  st:{cons:"Audacia sufriente: Procesa el dolor en silencio, sin pedir ayuda. Usa el sufrimiento como combustible para crecer. El más estoico del tipo 4.",
+     soc:"Vergüenza: Se compara constantemente con los demás y siente que siempre le falta algo. Su dolor es social y visible.",
+     sex:"Competencia: Compite por ser el más intenso, el más amado, el más especial. Puede ser seductor y demandante a la vez."}
+},
+5:{name:"El Investigador",alias:"El Observador",triada:"mental",col:"#EAF4FF",ct:"#0A2E52",cb:"#1A6BB5",
+  int:8,des:7,pasion:"Avaricia",virtud:"Desapego",
+  miedo:"Ser incompetente, inútil o invadido",deseo:"Ser capaz y competente, comprender el mundo",
+  herida:"Aprendiste que el mundo exigía demasiado y que retirarte era la única forma de conservar tu energía y tu integridad.",
+  mecanismo:"Aislamiento: separa pensamientos de emociones. Puede analizar sus sentimientos sin necesariamente vivirlos. La mente como refugio.",
+  relaciones:"Eres leal y profundo con quien te ganas su confianza, pero tu distancia puede sentirse como frialdad. Necesitas espacio para no sentirte invadido.",
+  intDesc:"En crecimiento puedes actuar con confianza y presencia plena en el mundo sin necesitar haberlo analizado todo primero.",
+  desDesc:"Bajo presión extrema te dispersas, saltas de tema en tema y buscas escapar en estimulación y movimiento para evitar el vacío.",
+  signInt:["Actúas antes de tener toda la información","Tu cuerpo y tus emociones te informan tanto como tu mente","Puedes pedir lo que necesitas"],
+  signDes:["Tu mente salta sin dirección real","La estimulación reemplaza la presencia","El análisis paraliza la acción"],
+  fortalezas:["Pensamiento profundo","Objetividad","Capacidad de concentración","Independencia genuina","Conocimiento especializado"],
+  sombras:["Aislamiento emocional","Desconexión del cuerpo","Tacañería de tiempo y energía","Frialdad relacional","Análisis como evasión"],
+  frases:["Necesito entenderlo bien antes de actuar.","Mi espacio es sagrado y no negociable.","Prefiero observar antes de participar."],
+  recomendaciones:[
+    {t:"Practica la presencia antes del análisis",d:"No todo necesita ser procesado en soledad. A veces el cuerpo y la emoción ya tienen la respuesta que la mente busca."},
+    {t:"Comparte tu mundo interior",d:"No tienes que contarlo todo. Pero compartir algo real con alguien de confianza no es invasión — es conexión."},
+    {t:"Actúa con lo que tienes",d:"La información perfecta no llega. La preparación excesiva es a veces una forma elegante de no comprometerse."}
+  ],
+  st:{cons:"Castillo: Protege con celo su espacio, energía, tiempo y recursos. El más hermético de todos. Necesita muchísima soledad.",
+     soc:"Tótem: Busca el conocimiento como forma de pertenecer a un grupo de élite intelectual. Su conexión es mental, no emocional.",
+     sex:"Confianza: Se abre de forma total pero únicamente con personas muy elegidas. La intimidad es su forma de conexión más intensa."}
+},
+6:{name:"El Leal",alias:"El Escéptico",triada:"mental",col:"#EDF6FF",ct:"#0C2E4E",cb:"#2070B8",
+  int:9,des:3,pasion:"Miedo",virtud:"Coraje",
+  miedo:"No tener apoyo, ser abandonado o traicionado",deseo:"Tener seguridad, apoyo y certeza",
+  herida:"Aprendiste que el mundo no era un lugar seguro y que la desconfianza era una forma inteligente de sobrevivir.",
+  mecanismo:"Proyección: atribuye a personas o situaciones externas los peligros que siente internamente. El miedo se localiza afuera.",
+  relaciones:"Eres leal y comprometido hasta el extremo, pero la desconfianza puede crear pruebas y tensiones que dañan lo que más valoras.",
+  intDesc:"En crecimiento puedes confiar en la vida y en las personas sin necesitar garantías ni analizar todos los posibles escenarios.",
+  desDesc:"Bajo estrés te vuelves más competitivo y orientado a demostrar tu valor, perdiendo tu capacidad de conexión genuina.",
+  signInt:["Confías sin necesitar pruebas","Actúas desde el coraje, no desde la certeza","Tu cuerpo se siente en calma sin explicación"],
+  signDes:["Compites por demostrar que puedes","El miedo se disfraza de eficiencia","Las relaciones se vuelven transaccionales"],
+  fortalezas:["Lealtad profunda","Responsabilidad","Capacidad de anticipar problemas","Valentía cuando importa","Compromiso genuino"],
+  sombras:["Ansiedad anticipatoria","Desconfianza habitual","Autosabotaje","Dependencia de la autoridad o rebelión contra ella","Duda paralizante"],
+  frases:["¿Y si algo sale mal y no lo vi venir?","Necesito saber que puedo contar con alguien.","Cuando confío de verdad, soy el aliado más leal que existe."],
+  recomendaciones:[
+    {t:"Distingue la intuición del miedo",d:"No todas las señales de alarma son reales. Aprende a notar cuándo tu cuerpo avisa y cuándo tu mente inventa."},
+    {t:"Practica la acción desde la incertidumbre",d:"El coraje no es ausencia de miedo — es moverse aunque el miedo esté presente. Ese movimiento te libera."},
+    {t:"Confía en tu propio criterio",d:"Has buscado autoridad fuera porque desconfías de la interna. Pero tu percepción tiene más valor del que crees."}
+  ],
+  st:{cons:"Calor: Busca seguridad en la familia, la comunidad y las rutinas. El más hogareño y estructurado del tipo 6.",
+     soc:"Deber: Encuentra seguridad en instituciones, reglas y estructuras. Muy leal al grupo y a sus normas.",
+     sex:"Fuerza/Belleza: Confronta el miedo adoptando una postura fuerte y desafiante. El más contradictorio: el que más teme y más lo disimula."}
+},
+7:{name:"El Entusiasta",alias:"El Epicúreo",triada:"mental",col:"#FFFBEA",ct:"#5C3D00",cb:"#D4820A",
+  int:5,des:1,pasion:"Gula",virtud:"Sobriedad",
+  miedo:"Ser privado o atrapado en el dolor",deseo:"Ser feliz, satisfecho y libre",
+  herida:"Aprendiste a escapar del dolor muy rápido. La alegría se volvió una estrategia antes de que fuera genuina.",
+  mecanismo:"Racionalización: reencuadra las experiencias difíciles en positivo antes de haberlas sentido realmente. El dolor se convierte en lección.",
+  relaciones:"Eres magnético y divertido, pero tu miedo a la profundidad puede hacer que las personas cercanas sientan que nunca llegan a ti del todo.",
+  intDesc:"En crecimiento puedes profundizar, concentrarte y disfrutar del silencio sin necesitar escapar ni diversificar.",
+  desDesc:"Bajo presión intensa te vuelves crítico, rígido y perfeccionista con una exigencia que normalmente no tienes.",
+  signInt:["Puedes quedarte con la incomodidad sin huir","La profundidad te atrae tanto como la variedad","Disfrutas lo ordinario sin necesitar adrenalina"],
+  signDes:["La crítica reemplaza la apertura","Te exiges y exiges con una rigidez que no reconoces como tuya","El placer se vuelve obligación"],
+  fortalezas:["Entusiasmo genuino","Creatividad","Optimismo funcional","Energía contagiosa","Capacidad de síntesis"],
+  sombras:["Evasión del dolor","Compromiso superficial","Exceso de opciones","Incapacidad de quedarse","Hedonismo compulsivo"],
+  frases:["La vida es demasiado corta para quedarse en lo que duele.","Siempre hay algo mejor que explorar.","Cuando me aburro, algo en mí se muere un poco."],
+  recomendaciones:[
+    {t:"Quédate en lo que duele un momento más",d:"No para torturarte, sino para descubrir que puedes con eso. El dolor que no sientes no desaparece — solo espera."},
+    {t:"Elige profundidad sobre variedad",d:"Una experiencia vivida completamente vale más que diez iniciadas y abandonadas. La riqueza está en lo que terminas."},
+    {t:"Distingue el entusiasmo del escape",d:"No toda alegría es huida. Pero vale la pena preguntarse qué estás evitando cuando buscas el siguiente plan."}
+  ],
+  st:{cons:"Banda de opciones: Acumula experiencias, planes y alternativas como escudo contra la privación. Muy orientado a la libertad personal.",
+     soc:"Sacrificio: Limita sus propios placeres para servir al grupo o a una causa. El más altruista del tipo 7. Su hedonismo se vuelve ideología.",
+     sex:"Fascinación: Busca la chispa, la intensidad y la novedad en las relaciones. Se enamora con facilidad y se aburre igual de rápido."}
+},
+8:{name:"El Desafiador",alias:"El Protector",triada:"visceral",col:"#FFF0EB",ct:"#5C1A00",cb:"#D85A30",
+  int:2,des:5,pasion:"Lujuria",virtud:"Inocencia",
+  miedo:"Ser controlado, herido o traicionado",deseo:"Protegerse y proteger a otros, tener control",
+  herida:"Aprendiste muy pronto que el mundo era duro y que mostrar necesidad era peligroso. La fuerza se volvió tu única armadura.",
+  mecanismo:"Negación: suprime sistemáticamente su vulnerabilidad, su necesidad de los demás y su propio dolor. Siempre puede con todo.",
+  relaciones:"Eres protector e intenso, pero tu miedo a ser controlado puede hacer que alejes exactamente a quienes más quieres cerca.",
+  intDesc:"En crecimiento puedes ser genuinamente tierno, generoso y empático sin sentir que eso te expone o te debilita.",
+  desDesc:"Bajo estrés severo te repligas, te aíslas y te vuelves frío y analítico en lugar de actuar, como si tu energía natural se cerrara.",
+  signInt:["Permites que alguien vea tu fragilidad","Tu fuerza protege sin necesitar dominar","Puedes pedir sin sentirte en deuda"],
+  signDes:["Te encierras y observas en lugar de actuar","El análisis frío reemplaza la conexión","Tu vulnerabilidad se convierte en armadura de distancia"],
+  fortalezas:["Liderazgo natural","Protección genuina","Valentía","Capacidad de acción","Presencia poderosa"],
+  sombras:["Necesidad de control","Exceso de intensidad","Incapacidad de mostrar vulnerabilidad","Confrontación innecesaria","Intimidación inconsciente"],
+  frases:["Si muestro que necesito algo, me expongo.","Prefiero el conflicto abierto a la traición silenciosa.","Cuando alguien que protejo sufre, no puedo quedarme quieto."],
+  recomendaciones:[
+    {t:"La vulnerabilidad es poder, no debilidad",d:"Los que más temen mostrarse son los que más impacto generan cuando lo hacen. Tu ternura no te hace frágil — te hace humano."},
+    {t:"Distingue proteger de controlar",d:"Cuidar a alguien no requiere controlarlo. La diferencia está en si dejas que el otro tenga su propia fuerza."},
+    {t:"Practica la quietud activa",d:"No toda situación necesita tu intervención. Aprender a no actuar es una de las formas más sofisticadas de fuerza."}
+  ],
+  st:{cons:"Supervivencia: Usa su fuerza para proteger sus recursos y su mundo. El más pragmático y territorial del tipo 8.",
+     soc:"Solidaridad: Su poder se pone al servicio del grupo vulnerable. El líder que protege. El más generoso del tipo 8.",
+     sex:"Posesión: Intensa química con la persona elegida. Quiere fusión completa. El más apasionado y explosivo del tipo 8."}
+},
+9:{name:"El Pacificador",alias:"El Mediador",triada:"visceral",col:"#F0FFF8",ct:"#054030",cb:"#1DA870",
+  int:3,des:6,pasion:"Pereza espiritual",virtud:"Acción",
+  miedo:"Pérdida, separación o conflicto",deseo:"Paz interior, armonía y unión",
+  herida:"Aprendiste que tu presencia plena o tus deseos propios generaban problemas. Fue más seguro hacerte pequeño.",
+  mecanismo:"Narcotización: se adormece ante sus propias necesidades a través de rutinas placenteras y distracciones que evitan el contacto con lo que realmente quiere.",
+  relaciones:"Eres cálido y empático, pero tu tendencia a disolvert en los otros puede hacer que las personas cercanas no sepan quién eres realmente tú.",
+  intDesc:"En crecimiento puedes definir metas propias con claridad, tomar acción decidida y mostrarte sin miedo a ocupar espacio.",
+  desDesc:"Bajo estrés extremo te vuelves ansioso y suspicaz, desconfiando de quienes normalmente son tu fuente de paz.",
+  signInt:["Sabes lo que quieres sin necesitar validación","Ocupas espacio sin disculparte","El conflicto no te destruye — lo puedes atravesar"],
+  signDes:["La desconfianza reemplaza la calma","La ansiedad paraliza tu capacidad de actuar","Buscas amenazas donde antes solo veías tranquilidad"],
+  fortalezas:["Empatía profunda","Capacidad mediadora","Paciencia genuina","Calma bajo presión","Apertura mental"],
+  sombras:["Invisibilidad propia","Postergación crónica","Fusión con los demás","Pasividad agresiva","Desconexión de deseos propios"],
+  frases:["Lo que yo quiero puede esperar.","Me resulta difícil decir que no cuando alguien me necesita.","Cuando hay paz afuera, puedo existir. Cuando hay conflicto, desaparezco."],
+  recomendaciones:[
+    {t:"Define una cosa que quieres tú esta semana",d:"No lo que quiere el grupo. Lo que tú quieres. Y ve por ello."},
+    {t:"El conflicto no destruye lo que es real",d:"Decir lo que piensas no rompe el amor genuino — lo fortalece. Tu presencia completa es un regalo, no una amenaza."},
+    {t:"Nota cuándo te estás borrando",d:"Ese momento en que cedes sin pensar, en que cambias de opinión para no incomodar — ahí empieza tu trabajo."}
+  ],
+  st:{cons:"Apetito: Busca comodidad en rutinas placenteras predecibles. El más autoanestesiador de los tres.",
+     soc:"Participación: Se disuelve en grupos y causas colectivas. El más activo socialmente.",
+     sex:"Fusión: Se funde completamente con la pareja adoptando su identidad. El que más se pierde en el amor."}
+}
+};
+
+const SCALE_LABELS=["Nunca me\nrepresenta","Pocas\nveces","A\nveces","Casi\nsiempre","Totalmente\nyo"];
+
+// ══════════════════════════════════════════════════════════
+// 33 PREGUNTAS OPTIMIZADAS
+// Distribución: T1×4, T2×4, T3×3, T4×4, T5×3, T6×4, T7×3, T8×4, T9×4
+// ══════════════════════════════════════════════════════════
+const QS=[
+
+// ── TIPO 1: EL PERFECCIONISTA (4 preguntas) ──
+{t:1,d:"Herida central",
+ q:"¿Cuando cometes un error, no solo sientes que fallaste en algo — sientes que fallaste tú como persona?"},
+
+{t:1,d:"Voz interna",
+ q:"¿Hay una vocecita en tu cabeza que siempre está evaluando si lo que hiciste estuvo bien o mal, aunque nadie más se haya dado cuenta?"},
+
+{t:1,d:"Mecanismo de defensa",
+ q:"¿Cuando te da rabia o sientes algo que crees que 'no deberías sentir', lo guardas y te pones a trabajar o a aguantar — como si sentirlo fuera un problema?"},
+
+{t:1,d:"Bajo estrés",
+ q:"¿Cuando las cosas se ponen muy difíciles, caes en una tristeza profunda y en la sensación de que algo en ti está mal, aunque hayas hecho todo bien?"},
+
+// ── TIPO 2: EL AYUDADOR (4 preguntas) ──
+{t:2,d:"Rasgo central",
+ q:"¿Sabes lo que la gente necesita antes de que te lo pidan — y te sientes bien de verdad cuando puedes ayudar antes de que te lo pidan?"},
+
+{t:2,d:"Herida emocional",
+ q:"¿En el fondo, sientes que si dejas de ayudar o de estar para los demás, la gente va a dejar de quererte o de buscarte?"},
+
+{t:2,d:"Mecanismo de defensa",
+ q:"¿Cuando sientes algo de rencor hacia alguien a quien ayudas, lo dejas pasar y sigues dando, aunque por dentro ya no estés tan bien?"},
+
+{t:2,d:"Patrón relacional",
+ q:"¿En una relación, necesitas sentir que la otra persona te necesita — que sin ti algo en su vida no funcionaría igual?"},
+
+// ── TIPO 3: EL TRIUNFADOR (3 preguntas) ──
+{t:3,d:"Herida central",
+ q:"¿Fracasar no solo te duele — lo sientes como si eso dijera algo sobre lo que vales como persona, no solo sobre lo que hiciste?"},
+
+{t:3,d:"Mecanismo de defensa",
+ q:"¿A veces sientes que sabes perfectamente cómo mostrarte ante los demás, pero no tienes tan claro qué es lo que realmente sientes tú?"},
+
+{t:3,d:"Rasgo central",
+ q:"¿Cambias sin darte cuenta cómo hablas, cómo te presentas o qué cuentas de ti según con quién estés, para caerle bien o causar buena impresión?"},
+
+// ── TIPO 4: EL INDIVIDUALISTA (4 preguntas) ──
+{t:4,d:"Rasgo central",
+ q:"¿Sientes que eres diferente a la mayoría de la gente — que hay algo en ti que casi nadie logra entender del todo?"},
+
+{t:4,d:"Herida emocional",
+ q:"¿Hay algo que siempre sientes que te falta — una conexión más real, una vida más intensa — como si lo que tienes nunca fuera suficiente?"},
+
+{t:4,d:"Mecanismo de defensa",
+ q:"¿Todo lo que te pasa afuera lo vives muy adentro? ¿Las cosas que ves, escuchas o sientes se convierten en emociones que se quedan contigo mucho tiempo?"},
+
+{t:4,d:"Bajo estrés",
+ q:"¿Cuando el dolor se pone intenso, empiezas a necesitar mucho más que te presten atención o que te digan que estás bien — pero nada termina de llenarte?"},
+
+// ── TIPO 5: EL INVESTIGADOR (3 preguntas) ──
+{t:5,d:"Rasgo central",
+ q:"¿Después de estar con gente o en situaciones sociales, necesitas un rato solo para recargar — como si el mundo te pidiera más energía de la que tienes disponible?"},
+
+{t:5,d:"Herida emocional",
+ q:"¿Cuando alguien se mete en tu espacio, tu tiempo o tus cosas sin que lo hayas invitado, sientes que algo se cierra en ti automáticamente?"},
+
+{t:5,d:"Mecanismo de defensa",
+ q:"¿Puedes hablar de lo que sientes como si lo estuvieras explicando desde afuera — sin necesariamente estar sintiéndolo en ese momento?"},
+
+// ── TIPO 6: EL LEAL (4 preguntas) ──
+{t:6,d:"Rasgo central",
+ q:"¿Tu cabeza siempre está pensando en lo que podría salir mal — incluso cuando todo está bien y no hay ninguna razón para preocuparte?"},
+
+{t:6,d:"Herida emocional",
+ q:"¿Cuando alguien en quien confiabas te falla, no solo te duele esa persona — sientes que ya no puedes confiar igual en nadie?"},
+
+{t:6,d:"Mecanismo de defensa",
+ q:"¿Cuando tienes miedo de algo, en vez de retroceder lo enfrentas de frente y con fuerza — como si ser fuerte por fuera pudiera callar lo que sientes por dentro?"},
+
+{t:6,d:"Patrón relacional",
+ q:"¿Antes de confiar de verdad en alguien, sin darte cuenta lo pones a prueba — para ver si de verdad está contigo o te va a fallar?"},
+
+// ── TIPO 7: EL ENTUSIASTA (3 preguntas) ──
+{t:7,d:"Rasgo central",
+ q:"¿Cuando algo te aburre, te duele o te limita, tu mente se va sola a pensar en algo más interesante o en el siguiente plan — como si quedarte ahí fuera insoportable?"},
+
+{t:7,d:"Mecanismo de defensa",
+ q:"¿Cuando algo malo te pasa, rápidamente lo conviertes en aprendizaje o le ves el lado positivo — antes de haberlo sentido de verdad?"},
+
+{t:7,d:"Herida emocional",
+ q:"¿Cuando sientes que no tienes opciones, que estás atrapado o que algo te amarra — te entra una angustia que va mucho más allá de lo que la situación merece?"},
+
+// ── TIPO 8: EL DESAFIADOR (4 preguntas) ──
+{t:8,d:"Rasgo central",
+ q:"¿Te aseguras de que nadie tenga poder sobre ti — y si alguien lo intenta, lo enfrentas de frente aunque eso genere conflicto?"},
+
+{t:8,d:"Herida emocional",
+ q:"¿En el fondo, sientes que si muestras que necesitas algo o que algo te duele, te vas a exponer a que te hagan daño o te controlen?"},
+
+{t:8,d:"Mecanismo de defensa",
+ q:"¿Te presentas siempre como alguien que puede con todo — aunque por dentro estés sufriendo o necesitando ayuda?"},
+
+{t:8,d:"En crecimiento",
+ q:"¿Cuando estás bien, puedes ser tierno y cariñoso con la gente que quieres sin sentir que eso te pone en desventaja o te hace quedar mal?"},
+
+// ── TIPO 9: EL PACIFICADOR (4 preguntas) ──
+{t:9,d:"Rasgo central",
+ q:"¿Prefieres ceder y no decir nada antes de armar un problema — aunque eso signifique no conseguir lo que tú querías?"},
+
+{t:9,d:"Herida emocional",
+ q:"¿En algún momento de tu vida aprendiste que era mejor no pedir demasiado, no opinar tanto o no ocupar mucho espacio para que todo estuviera en paz?"},
+
+{t:9,d:"Mecanismo de defensa",
+ q:"¿Cuando no quieres pensar en algo que te incomoda, te pones a ver pantallas, a comer algo rico o a hacer cualquier cosa — sin darte cuenta de que estás evitando lo que sientes?"},
+
+{t:9,d:"Patrón relacional",
+ q:"¿En pareja, terminas adoptando los gustos, las ideas o la forma de ver la vida de la otra persona — hasta que ya no sabes bien qué es lo que tú quieres?"}
+
+];
+
+// ── ESTADO ──
+let phase='intro';
+let user={name:'',email:'',age:'',job:''};
+let ans=new Array(QS.length).fill(null);
+let cur=0;
+let result=null;
+
+// ── CÁLCULO ──
+function calcScores(){
+  const sc={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+  const st={1:{cons:0,soc:0,sex:0},2:{cons:0,soc:0,sex:0},3:{cons:0,soc:0,sex:0},
+            4:{cons:0,soc:0,sex:0},5:{cons:0,soc:0,sex:0},6:{cons:0,soc:0,sex:0},
+            7:{cons:0,soc:0,sex:0},8:{cons:0,soc:0,sex:0},9:{cons:0,soc:0,sex:0}};
+  ans.forEach((a,i)=>{
+    if(a===null)return;
+    const q=QS[i],w=a-1;
+    sc[q.t]+=w;
+    const d=q.d.toLowerCase();
+    if(d.includes('conserv'))st[q.t].cons+=w;
+    if(d.includes('social'))st[q.t].soc+=w;
+    if(d.includes('sexual')||d.includes('relacional')||d.includes('patrón'))st[q.t].sex+=w;
+  });
+  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  const top=parseInt(sorted[0][0]);
+  const cands=[top>1?top-1:9,top<9?top+1:1];
+  const wing=cands.sort((a,b)=>sc[b]-sc[a])[0];
+  const topSt=Object.entries(st[top]).sort((a,b)=>b[1]-a[1])[0][0];
+  return{sc,st,sorted,top,wing,topSt};
+}
+
+// ── ENVIAR A GOOGLE SHEETS ──
+async function sendToSheet(r){
+  if(!CONFIG.SHEET_URL||CONFIG.SHEET_URL==='TU_URL_DE_APPS_SCRIPT_AQUI')return;
+  const stL={cons:'Conservación',soc:'Social',sex:'Sexual'};
+  const t=T[r.top];
+  const payload={
+    action:'saveResult',
+    timestamp:new Date().toISOString(),
+    nombre:user.name,email:user.email,edad:user.age,ocupacion:user.job,
+    eneatipo:r.top,nombre_tipo:t.name,ala:r.wing,subtipo:stL[r.topSt],
+    triada:t.triada,pasion:t.pasion,virtud:t.virtud,
+    puntaje_t1:r.sc[1],puntaje_t2:r.sc[2],puntaje_t3:r.sc[3],
+    puntaje_t4:r.sc[4],puntaje_t5:r.sc[5],puntaje_t6:r.sc[6],
+    puntaje_t7:r.sc[7],puntaje_t8:r.sc[8],puntaje_t9:r.sc[9],
+    respuestas:JSON.stringify(ans),
+    codigo:codigoURL
+  };
+  try{
+    await fetch(CONFIG.SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  }catch(e){console.warn('Sheet error:',e);}
+}
+
+// ── DESCARGA TXT ──
+function buildTxt(r){
+  const t=T[r.top],wt=T[r.wing];
+  const stL={cons:'Conservación',soc:'Social',sex:'Sexual'};
+  const trL={mental:'Mental (5-6-7)',emocional:'Emocional (2-3-4)',visceral:'Visceral (8-9-1)'};
+  const date=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
+  return`════════════════════════════════════════
+RENACER — Test de Eneagrama · Perfil Personal
+════════════════════════════════════════
+
+DATOS PERSONALES
+Nombre    : ${user.name}
+Email     : ${user.email}
+Edad      : ${user.age} años
+Ocupación : ${user.job}
+Fecha     : ${date}
+
+════════════════════════════════════════
+RESULTADO PRINCIPAL
+════════════════════════════════════════
+
+Eneatipo  : Tipo ${r.top} — ${t.name} (${t.alias})
+Ala       : Ala ${r.wing} — ${wt.name}
+Tríada    : ${trL[t.triada]}
+Subtipo   : ${stL[r.topSt]}
+Pasión    : ${t.pasion}
+Virtud    : ${t.virtud}
+
+MIEDO CENTRAL
+${t.miedo}
+
+DESEO PROFUNDO
+${t.deseo}
+
+════════════════════════════════════════
+HERIDA Y MECANISMO DE DEFENSA
+════════════════════════════════════════
+
+HERIDA EMOCIONAL
+${t.herida}
+
+MECANISMO DE DEFENSA
+${t.mecanismo}
+
+EN LAS RELACIONES
+${t.relaciones}
+
+════════════════════════════════════════
+INTEGRACIÓN Y DESINTEGRACIÓN
+════════════════════════════════════════
+
+↑ EN CRECIMIENTO → Tipo ${t.int}: ${T[t.int].name}
+${t.intDesc}
+
+Señales de integración:
+${t.signInt.map(s=>'✓ '+s).join('\n')}
+
+↓ BAJO ESTRÉS → Tipo ${t.des}: ${T[t.des].name}
+${t.desDesc}
+
+Señales de desintegración:
+${t.signDes.map(s=>'⚠ '+s).join('\n')}
+
+════════════════════════════════════════
+SUBTIPOS INSTINTIVOS
+════════════════════════════════════════
+
+Subtipo dominante: ${stL[r.topSt]}
+${t.st[r.topSt]}
+
+🏠 Conservación: ${t.st.cons}
+👥 Social: ${t.st.soc}
+❤️ Sexual / Uno a uno: ${t.st.sex}
+
+════════════════════════════════════════
+FORTALEZAS Y SOMBRAS
+════════════════════════════════════════
+
+Fortalezas : ${t.fortalezas.join(' · ')}
+Sombras    : ${t.sombras.join(' · ')}
+
+════════════════════════════════════════
+FRASES QUE SUELEN RESONAR
+════════════════════════════════════════
+${t.frases.map(f=>'"'+f+'"').join('\n')}
+
+════════════════════════════════════════
+RECOMENDACIONES DE EVOLUCIÓN
+════════════════════════════════════════
+${t.recomendaciones.map((rec,i)=>`${i+1}. ${rec.t}\n   ${rec.d}`).join('\n\n')}
+
+════════════════════════════════════════
+PUNTUACIONES POR TIPO
+════════════════════════════════════════
+${r.sorted.map(([tp,s])=>`Tipo ${tp} (${T[tp].alias}): ${s} pts`).join('\n')}
+
+════════════════════════════════════════
+RENACER — 7 días para volver a ti · Uso personal
+════════════════════════════════════════`;
+}
+
+// ══════════════════════════════════════════════════════════
+// 📄 EXPORTACIÓN PDF — html2canvas + jsPDF
+// Funciona en: Chrome PC, Chrome Android, Safari iPhone
+// Sin window.print(), descarga directa, multipágina automático
+// ══════════════════════════════════════════════════════════
+
+function buildPDFHTML(r) {
+  const t=T[r.top], wt=T[r.wing];
+  const stL={cons:'Conservación',soc:'Social',sex:'Sexual'};
+  const stI={cons:'🏠',soc:'👥',sex:'❤️'};
+  const trL={mental:'Tríada Mental (5·6·7)',emocional:'Tríada Emocional (2·3·4)',visceral:'Tríada Visceral (8·9·1)'};
+  const date=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
+  const maxS=Math.max(...Object.values(r.sc));
+  const bars=r.sorted.map(([tp,s])=>{
+    const p=maxS>0?Math.round((s/maxS)*100):0;
+    const isT=parseInt(tp)===r.top;
+    return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+      <span style="font-size:12px;width:130px;flex-shrink:0;color:${isT?t.cb:'#4a4a4a'};font-weight:${isT?700:400}">${T[tp].alias}</span>
+      <div style="flex:1;height:6px;background:#e0dbd0;border-radius:3px">
+        <div style="width:${p}%;height:6px;border-radius:3px;background:${isT?t.cb:'#ccc'}"></div>
+      </div>
+      <span style="font-size:11px;color:#888;width:36px;text-align:right;flex-shrink:0">${s} pts</span>
+    </div>`;
+  }).join('');
+
+  return `
+<div style="font-family:'Helvetica Neue',Arial,sans-serif;background:#fff;color:#0f0f0f;font-size:13px;line-height:1.7;padding:40px 44px;width:794px;box-sizing:border-box">
+
+  <!-- HEADER -->
+  <div style="background:${t.col};border-radius:14px;padding:30px 34px;margin-bottom:22px;border:1px solid ${t.cb}">
+    <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:${t.ct};opacity:.7;margin-bottom:10px;font-weight:600">RENACER — 7 días para volver a ti · ${date}</div>
+    <div style="font-size:56px;font-weight:700;color:${t.ct};line-height:1;margin-bottom:4px">${r.top}</div>
+    <div style="font-size:26px;font-weight:600;color:${t.ct};margin-bottom:3px">${t.name}</div>
+    <div style="font-size:12px;color:${t.ct};opacity:.7;margin-bottom:12px">${t.alias} · ${trL[t.triada]}</div>
+    <div style="font-size:13px;color:${t.ct};opacity:.88;line-height:1.7">${t.herida.split('.')[0]}.</div>
+  </div>
+
+  <!-- PERFIL -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Tu perfil</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px">
+    ${[['Nombre',user.name],['Fecha',date],['Miedo central',t.miedo],['Deseo profundo',t.deseo],['Ala dominante','Ala '+r.wing+' — '+wt.name],['Subtipo',stI[r.topSt]+' '+stL[r.topSt]],['Pasión',t.pasion],['Virtud',t.virtud]].map(([l,v])=>`
+    <div style="background:#f7f4ef;border-radius:9px;padding:11px 13px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:3px;font-weight:600">${l}</div>
+      <div style="font-size:12px;font-weight:500;color:#0f0f0f">${v}</div>
+    </div>`).join('')}
+  </div>
+
+  <!-- HERIDA -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Herida y mecanismo de defensa</div>
+  ${[['Herida emocional',t.herida],['Mecanismo de defensa',t.mecanismo],['En las relaciones',t.relaciones]].map(([l,v])=>`
+  <div style="border-left:3px solid ${t.cb};padding-left:14px;margin-bottom:13px">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:${t.cb};font-weight:700;margin-bottom:4px">${l}</div>
+    <div style="font-size:12px;color:#4a4a4a;line-height:1.75">${v}</div>
+  </div>`).join('')}
+
+  <!-- INTEGRACIÓN -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Integración y desintegración</div>
+  <div style="background:#f7f4ef;border-radius:9px;padding:14px 16px;margin-bottom:9px">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#1D9E75;font-weight:700;margin-bottom:6px">↑ EN CRECIMIENTO — Tipo ${t.int}: ${T[t.int].name}</div>
+    <div style="font-size:12px;color:#4a4a4a;line-height:1.65;margin-bottom:7px">${t.intDesc}</div>
+    ${t.signInt.map(s=>`<div style="font-size:12px;color:#1D9E75;padding:3px 0 3px 11px;border-left:2px solid #1D9E75;margin-bottom:3px">✓ ${s}</div>`).join('')}
+  </div>
+  <div style="background:#f7f4ef;border-radius:9px;padding:14px 16px;margin-bottom:22px">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#D85A30;font-weight:700;margin-bottom:6px">↓ BAJO ESTRÉS — Tipo ${t.des}: ${T[t.des].name}</div>
+    <div style="font-size:12px;color:#4a4a4a;line-height:1.65;margin-bottom:7px">${t.desDesc}</div>
+    ${t.signDes.map(s=>`<div style="font-size:12px;color:#D85A30;padding:3px 0 3px 11px;border-left:2px solid #D85A30;margin-bottom:3px">⚠ ${s}</div>`).join('')}
+  </div>
+
+  <!-- SUBTIPOS -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Subtipos instintivos</div>
+  ${[['🏠 Conservación',t.st.cons],['👥 Social',t.st.soc],['❤️ Sexual / Uno a uno',t.st.sex]].map(([l,v])=>`
+  <div style="background:#f7f4ef;border-radius:9px;padding:12px 15px;margin-bottom:8px">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:${t.cb};font-weight:700;margin-bottom:5px">${l}</div>
+    <div style="font-size:12px;color:#4a4a4a;line-height:1.65">${v}</div>
+  </div>`).join('')}
+
+  <!-- FORTALEZAS -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin:22px 0 12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Fortalezas y sombras</div>
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:${t.cb};font-weight:700;margin-bottom:7px">Fortalezas</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+    ${t.fortalezas.map(f=>`<span style="padding:4px 11px;border-radius:20px;font-size:11px;border:1px solid ${t.cb};color:${t.cb}">${f}</span>`).join('')}
+  </div>
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#888;font-weight:700;margin-bottom:7px">Sombras</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px">
+    ${t.sombras.map(f=>`<span style="padding:4px 11px;border-radius:20px;font-size:11px;border:1px solid #ddd;color:#4a4a4a">${f}</span>`).join('')}
+  </div>
+
+  <!-- FRASES -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Frases que suelen resonar</div>
+  ${t.frases.map(f=>`<div style="font-style:italic;font-size:13px;color:#4a4a4a;border-left:2px solid ${t.cb};padding-left:13px;margin-bottom:10px;line-height:1.65">"${f}"</div>`).join('')}
+
+  <!-- RECOMENDACIONES -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin:22px 0 12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Recomendaciones de evolución</div>
+  ${t.recomendaciones.map((rec,i)=>`
+  <div style="background:#f7f4ef;border-radius:9px;padding:13px 15px;margin-bottom:9px">
+    <div style="font-size:12px;font-weight:700;color:${t.cb};margin-bottom:4px">${i+1}. ${rec.t}</div>
+    <div style="font-size:11px;color:#4a4a4a;line-height:1.7">${rec.d}</div>
+  </div>`).join('')}
+
+  <!-- DISTRIBUCIÓN -->
+  <div style="font-size:15px;font-weight:700;color:#0f0f0f;margin:22px 0 12px;padding-bottom:6px;border-bottom:2px solid ${t.cb}">Distribución por tipo</div>
+  ${bars}
+
+  <!-- FOOTER -->
+  <div style="text-align:center;margin-top:28px;padding-top:16px;border-top:1px solid #e0dbd0;font-size:10px;color:#aaa">
+    RENACER — Test de Eneagrama · Perfil de ${user.name} · ${date}
+  </div>
+</div>`;
+}
+
+async function downloadPDF() {
+  if (!result) return;
+
+  const loading = document.getElementById('pdf-loading');
+  const container = document.getElementById('pdf-export-container');
+
+  // Mostrar loading
+  loading.classList.add('active');
+
+  try {
+    // Renderizar HTML del perfil en el contenedor oculto
+    container.innerHTML = buildPDFHTML(result);
+    container.style.left = '-9999px';
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.width = '794px';
+    document.body.appendChild(container);
+
+    // Esperar un frame para que el DOM se pinte
+    await new Promise(r => setTimeout(r, 300));
+
+    // Capturar con html2canvas
+    const canvas = await html2canvas(container, {
+      scale: 2,                    // Calidad retina
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      width: 794,
+      windowWidth: 794
+    });
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4'
+    });
+
+    const pageW = pdf.internal.pageSize.getWidth();   // 595 pt
+    const pageH = pdf.internal.pageSize.getHeight();  // 842 pt
+    const margin = 0;
+
+    const imgW = pageW - margin * 2;
+    const ratio = canvas.width / imgW;
+    const imgH = canvas.height / ratio;
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+    // Multipágina automático: corta el canvas en trozos de pageH
+    let yPos = 0;
+    let pageNum = 0;
+
+    while (yPos < imgH) {
+      if (pageNum > 0) pdf.addPage();
+
+      // Calcular cuánto del canvas entra en esta página
+      const sliceH = Math.min(pageH, imgH - yPos);
+      // Offset en píxeles del canvas original
+      const srcY = yPos * ratio;
+      const srcH = sliceH * ratio;
+
+      // Crear canvas de la rebanada
+      const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = srcH;
+      const ctx = sliceCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+
+      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+      pdf.addImage(sliceData, 'JPEG', margin, margin, imgW, sliceH);
+
+      yPos += pageH;
+      pageNum++;
+    }
+
+    // Nombre dinámico del archivo
+    const nombreLimpio = user.name.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    const fileName = `RENACER_Eneagrama_${nombreLimpio}.pdf`;
+
+    // Detección de Safari iOS — fallback a abrir en nueva pestaña
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    if (isIOS || isSafari) {
+      // Safari no soporta blob download directo — abrir en nueva pestaña
+      const pdfBlob = pdf.output('blob');
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+    } else {
+      // Chrome Android, Chrome PC, Firefox — descarga directa
+      pdf.save(fileName);
+    }
+
+  } catch(err) {
+    console.error('PDF error:', err);
+    // Mensaje de error visual sin alert bloqueante
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#c0392b;color:#fff;padding:14px 22px;border-radius:10px;font-size:13px;z-index:99999;font-family:sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.2)';
+    errDiv.textContent = '⚠ No se pudo generar el PDF. Intenta de nuevo.';
+    document.body.appendChild(errDiv);
+    setTimeout(() => errDiv.remove(), 4000);
+  } finally {
+    // Limpiar contenedor y loading
+    loading.classList.remove('active');
+    container.innerHTML = '';
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════
+// 🔐 SISTEMA DE LINK ÚNICO — Validación real con Google Sheets
+// El código en la URL se verifica contra la hoja "links"
+// Al completar el test, se marca como usado en Sheets
+// ══════════════════════════════════════════════════════════
+
+let codigoURL = new URLSearchParams(window.location.search).get('codigo') || '';
+let accesoValidado = false;   // true cuando Sheets confirmó que el código es válido
+let accesoPermitido = false;  // true = puede hacer el test
+
+function rBloqueadoInvalido() {
+  return `
+<div style="text-align:center;padding:3rem 0 2rem">
+  <div class="eyebrow">RENACER — 7 días para volver a ti</div>
+  <div style="font-size:48px;margin:1.5rem 0">🔒</div>
+  <h1 style="font-family:var(--serif);font-size:clamp(26px,5vw,38px);margin-bottom:1rem;font-weight:400">Acceso no válido</h1>
+  <p style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:2rem;font-weight:300;max-width:440px;margin-left:auto;margin-right:auto">
+    Este test requiere un link personalizado. Si adquiriste el test, revisa el mensaje que recibiste con tu código de acceso.
+  </p>
+</div>`;
+}
+
+function rBloqueadoUsado() {
+  return `
+<div style="text-align:center;padding:3rem 0 2rem">
+  <div class="eyebrow">RENACER — 7 días para volver a ti</div>
+  <div style="font-size:48px;margin:1.5rem 0">✦</div>
+  <h1 style="font-family:var(--serif);font-size:clamp(26px,5vw,38px);margin-bottom:1rem;font-weight:400">Este link ya fue usado</h1>
+  <p style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:2rem;font-weight:300;max-width:440px;margin-left:auto;margin-right:auto">
+    El test está diseñado para hacerse una sola vez. Si crees que hay un error, escríbele a quien te compartió el link.
+  </p>
+  <div class="card" style="text-align:left;max-width:440px;margin:0 auto 1rem">
+    <div class="card-label">¿Por qué una sola vez?</div>
+    <div class="card-text">La primera respuesta instintiva es la más fiel a quien realmente eres.</div>
+  </div>
+</div>`;
+}
+
+function rCargando() {
+  return `
+<div style="text-align:center;padding:4rem 0 2rem">
+  <div class="eyebrow">RENACER — 7 días para volver a ti</div>
+  <div style="margin:2rem 0">
+    <div style="width:40px;height:40px;border:3px solid rgba(181,134,42,.2);border-top-color:#b5862a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto"></div>
+  </div>
+  <p style="font-size:14px;color:var(--ink3);font-weight:300">Verificando tu acceso…</p>
+</div>`;
+}
+
+async function validarAcceso() {
+  // Sin código → bloquear directo
+  if (!codigoURL) {
+    accesoValidado = true;
+    accesoPermitido = false;
+    render();
+    return;
+  }
+
+  // Mostrar pantalla de carga mientras valida
+  document.getElementById('root').innerHTML = `<div class="wrap animate-in">${rCargando()}</div>`;
+
+  try {
+    const url = CONFIG.SCRIPT_URL + '?action=validarCodigo&codigo=' + encodeURIComponent(codigoURL);
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    accesoValidado = true;
+
+    if (data.valido && !data.usado) {
+      accesoPermitido = true;   // código existe y no fue usado → adelante
+    } else {
+      accesoPermitido = false;  // no existe o ya fue usado → bloquear
+      // Distinguir el mensaje
+      window._codigoUsado = data.usado;
+    }
+  } catch(e) {
+    // Si falla la red, dejar pasar (no bloquear al usuario por error de red)
+    console.warn('Validación falló, dejando pasar:', e);
+    accesoValidado = true;
+    accesoPermitido = true;
+  }
+
+  render();
+}
+
+async function marcarCompletado(nombre, eneatipo) {
+  if (!codigoURL) return;
+  try {
+    await fetch(CONFIG.SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'marcarUsado',
+        codigo: codigoURL,
+        nombre: nombre,
+        eneatipo: eneatipo
+      })
+    });
+  } catch(e) { console.warn('marcarUsado error:', e); }
+}
+
+// ── RENDER ──
+function render(){
+  const root=document.getElementById('root');
+  let h='';
+  if(phase==='intro'){
+    if(!accesoValidado){
+      // Todavía validando — mostrar loading
+      h=rCargando();
+    } else if(!accesoPermitido){
+      // Bloqueado
+      h = window._codigoUsado ? rBloqueadoUsado() : rBloqueadoInvalido();
+    } else {
+      h=rIntro();
+    }
+  }
+  else if(phase==='form')h=rForm();
+  else if(phase==='test')h=rTest();
+  else if(phase==='result')h=rResult();
+  root.innerHTML=`<div class="wrap animate-in">${h}<div class="footer">${CONFIG.BRAND} · Uso personal</div></div>`;
+  attachEvents();
+}
+
+function rIntro(){return`
+<div class="eyebrow">RENACER — 7 días para volver a ti</div>
+<h1>La arquitectura de tu <em>personalidad</em></h1>
+<p class="hero-sub">El Eneagrama no mide rasgos superficiales — detecta los patrones inconscientes, heridas emocionales y miedos centrales que construiste antes de tener palabras para nombrarlos.</p>
+<div class="card">
+  <div class="card-label">Qué vas a descubrir</div>
+  <div class="card-text">Tu eneatipo dominante, ala probable, subtipo instintivo, tríada, herida emocional, mecanismo de defensa, comportamiento bajo estrés y en crecimiento, fortalezas, sombras y recomendaciones personalizadas.</div>
+</div>
+<div class="card">
+  <div class="card-label">Cómo responder</div>
+  <div class="card-text">Responde desde cómo has sido durante la mayor parte de tu vida — no desde quien quieres ser ni desde quien crees que deberías ser. La incomodidad suele ser la señal de que vas por buen camino.</div>
+</div>
+<div class="card">
+  <div class="card-label">Escala de respuestas</div>
+  <div class="scale-row">
+    ${[1,2,3,4,5].map((n,i)=>`<div class="sr-item"><div class="sr-n">${n}</div><div class="sr-l">${SCALE_LABELS[i]}</div></div>`).join('')}
+  </div>
+</div>
+<div class="meta">33 preguntas · 8–12 minutos · ninguna respuesta es correcta ni incorrecta</div>
+<button class="btn-main" id="start-btn">Comenzar →</button>`;}
+
+function rForm(){return`
+<h2 class="section-head">Antes de empezar</h2>
+<p class="section-sub">Estos datos personalizan tu perfil y permiten guardar tus resultados.</p>
+<div class="field"><label>Nombre completo</label><input id="f-name" type="text" placeholder="Tu nombre completo" value="${user.name}"></div>
+<div class="field"><label>Correo electrónico</label><input id="f-email" type="email" placeholder="correo@ejemplo.com" value="${user.email}"></div>
+<div class="field-row">
+  <div class="field"><label>Edad</label><input id="f-age" type="number" placeholder="Ej: 32" min="16" max="99" value="${user.age}"></div>
+  <div class="field"><label>Ocupación</label><input id="f-job" type="text" placeholder="Ej: Psicóloga" value="${user.job}"></div>
+</div>
+<div id="form-err" class="err-msg">Por favor completa todos los campos.</div>
+<button class="btn-main" id="form-next">Comenzar el test →</button>
+<button class="btn-sec" id="form-back">← Volver</button>`;}
+
+function rTest(){
+  const q=QS[cur];
+  const pct=Math.round((cur/QS.length)*100);
+  const sel=ans[cur];
+  return`
+<div class="prog-wrap">
+  <div class="prog-top"><span class="prog-label">${cur+1} de ${QS.length}</span><span class="prog-pct">${pct}%</span></div>
+  <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+</div>
+<div class="q-tag">${q.d}</div>
+<div class="q-text">${q.q}</div>
+<div class="scale-btns">
+  ${[1,2,3,4,5].map((n,i)=>`<button class="sb${sel===n?' sel':''}" data-v="${n}">
+    <div class="sb-n">${n}</div>
+    <div class="sb-l">${SCALE_LABELS[i]}</div>
+  </button>`).join('')}
+</div>
+<div class="nav">
+  <button class="nav-prev" id="prev-btn" ${cur===0?'disabled':''}>← Anterior</button>
+  <button class="nav-next" id="next-btn" ${sel===null?'disabled':''}>
+    ${cur<QS.length-1?'Siguiente →':'Ver mi perfil →'}
+  </button>
+</div>`;}
+
+function rResult(){
+  const r=result;
+  const t=T[r.top],wt=T[r.wing];
+  const stL={cons:'Conservación',soc:'Social',sex:'Sexual'};
+  const stI={cons:'🏠',soc:'👥',sex:'❤️'};
+  const trC={mental:'#378ADD',emocional:'#D4537E',visceral:'#D85A30'};
+  const trL={mental:'Tríada Mental (5·6·7)',emocional:'Tríada Emocional (2·3·4)',visceral:'Tríada Visceral (8·9·1)'};
+  const trDesc={
+    mental:"Tu centro de gravedad es el pensamiento. Antes de sentir o actuar, tu mente analiza, anticipa y planifica.",
+    emocional:"Tu centro son las emociones y el reconocimiento. Tu identidad está profundamente ligada a cómo eres visto y amado.",
+    visceral:"Tu centro es el cuerpo y la voluntad. Sientes la vida en las tripas antes de pensarla."
+  };
+  const maxS=Math.max(...Object.values(r.sc));
+  const maxSt=Math.max(...Object.values(r.st[r.top]),1);
+  const bars=r.sorted.map(([tp,s])=>{
+    const p=maxS>0?Math.round((s/maxS)*100):0;
+    const isT=parseInt(tp)===r.top;
+    return`<div class="srow">
+      <span class="slbl" style="${isT?'color:var(--ink);font-weight:600':''}">${T[tp].alias}</span>
+      <div class="strk"><div class="sfill" style="width:${p}%;background:${isT?t.cb:'var(--sand3)'}"></div></div>
+      <span class="snum">${s}</span>
+    </div>`;
+  }).join('');
+  const stBars=Object.entries(r.st[r.top]).map(([k,v])=>{
+    const p=Math.round((v/maxSt)*100);
+    const isT=k===r.topSt;
+    return`<div class="srow">
+      <span class="slbl" style="${isT?'font-weight:600;color:var(--ink)':''}">${stI[k]} ${stL[k]}</span>
+      <div class="strk"><div class="sfill" style="width:${p}%;background:${isT?t.cb:'var(--sand3)'}"></div></div>
+      <span class="snum">${v}</span>
+    </div>`;
+  }).join('');
+
+  return`
+<div class="res-hero" style="background:${t.col};border-color:${t.cb}">
+  <div class="res-greeting" style="color:${t.ct}">Tu resultado, ${user.name}</div>
+  <div class="res-num" style="color:${t.ct}">${r.top}</div>
+  <div class="res-name" style="color:${t.ct}">${t.name}</div>
+  <div class="res-alias" style="color:${t.ct}">${t.alias} · ${trL[t.triada]}</div>
+  <p class="res-desc" style="color:${t.ct}">${t.herida.split('.')[0]}.</p>
+</div>
+
+<div class="rc">
+  <div class="rc-title">Tu perfil completo</div>
+  <div class="g2">
+    <div class="cell"><div class="cl">Miedo central</div><div class="cv">${t.miedo}</div></div>
+    <div class="cell"><div class="cl">Deseo profundo</div><div class="cv">${t.deseo}</div></div>
+    <div class="cell"><div class="cl">En crecimiento</div><div class="cv" style="color:${T[t.int].cb}">→ Tipo ${t.int}: ${T[t.int].name}</div></div>
+    <div class="cell"><div class="cl">Bajo estrés</div><div class="cv" style="color:${T[t.des].cb}">→ Tipo ${t.des}: ${T[t.des].name}</div></div>
+    <div class="cell"><div class="cl">Ala dominante</div><div class="cv">Ala ${r.wing}: ${wt.name}</div></div>
+    <div class="cell"><div class="cl">Subtipo</div><div class="cv">${stI[r.topSt]} ${stL[r.topSt]}</div></div>
+    <div class="cell"><div class="cl">Pasión</div><div class="cv">${t.pasion}</div></div>
+    <div class="cell"><div class="cl">Virtud</div><div class="cv">${t.virtud}</div></div>
+  </div>
+</div>
+
+<div class="rc">
+  <div class="rc-title" style="color:${trC[t.triada]}">${trL[t.triada]}</div>
+  <p style="font-size:14px;color:var(--ink2);line-height:1.75;font-weight:300">${trDesc[t.triada]}</p>
+</div>
+
+<div class="rc">
+  <div class="rc-title">Herida y mecanismo de defensa</div>
+  <div class="def-block" style="border-left-color:${t.cb}"><div class="def-lbl" style="color:${t.cb}">Herida emocional</div><div class="def-txt">${t.herida}</div></div>
+  <div class="def-block" style="border-left-color:${t.cb}"><div class="def-lbl" style="color:${t.cb}">Mecanismo de defensa</div><div class="def-txt">${t.mecanismo}</div></div>
+  <div class="def-block" style="border-left-color:${t.cb}"><div class="def-lbl" style="color:${t.cb}">En las relaciones</div><div class="def-txt">${t.relaciones}</div></div>
+</div>
+
+<div class="rc">
+  <div class="rc-title">Integración y desintegración</div>
+  <div class="st-card">
+    <div class="st-l" style="color:#1D9E75">↑ En crecimiento — hacia Tipo ${t.int}: ${T[t.int].name}</div>
+    <div class="st-t" style="margin-bottom:.7rem">${t.intDesc}</div>
+    ${t.signInt.map(s=>`<div class="sign-row" style="border-left-color:#1D9E75">✓ ${s}</div>`).join('')}
+  </div>
+  <div class="st-card">
+    <div class="st-l" style="color:#D85A30">↓ Bajo estrés — hacia Tipo ${t.des}: ${T[t.des].name}</div>
+    <div class="st-t" style="margin-bottom:.7rem">${t.desDesc}</div>
+    ${t.signDes.map(s=>`<div class="sign-row" style="border-left-color:#D85A30">⚠ ${s}</div>`).join('')}
+  </div>
+</div>
+
+<div class="rc">
+  <div class="rc-title">Subtipo dominante: ${stI[r.topSt]} ${stL[r.topSt]}</div>
+  <p style="font-size:14px;color:var(--ink2);line-height:1.7;margin-bottom:.85rem;font-weight:300">${t.st[r.topSt]}</p>
+  <div class="sl">Distribución de subtipos</div>${stBars}
+  <hr class="divider">
+  <div class="sl">Los tres subtipos</div>
+  ${['cons','soc','sex'].map(k=>`<div class="st-card"><div class="st-l" style="color:${t.cb}">${stI[k]} ${stL[k]}</div><div class="st-t">${t.st[k]}</div></div>`).join('')}
+</div>
+
+<div class="rc">
+  <div class="rc-title">Fortalezas y sombras</div>
+  <div class="sl">Fortalezas</div>
+  <div class="tag-row">${t.fortalezas.map(f=>`<span class="tag" style="border-color:${t.cb};color:${t.cb}">${f}</span>`).join('')}</div>
+  <div class="sl">Sombras</div>
+  <div class="tag-row">${t.sombras.map(f=>`<span class="tag">${f}</span>`).join('')}</div>
+</div>
+
+<div class="rc">
+  <div class="rc-title">Frases que suelen resonar</div>
+  ${t.frases.map(f=>`<div class="quote">"${f}"</div>`).join('')}
+</div>
+
+<div class="rc">
+  <div class="rc-title">Recomendaciones de evolución</div>
+  ${t.recomendaciones.map(rec=>`<div class="rec"><div class="rec-t" style="color:${t.cb}">${rec.t}</div><div class="rec-d">${rec.d}</div></div>`).join('')}
+</div>
+
+<div class="rc">
+  <div class="rc-title">Distribución por tipo</div>
+  ${bars}
+</div>
+
+<button class="action-btn ab-primary" id="dl-btn">⬇ Descargar mi perfil en PDF</button>
+<button class="action-btn ab-secondary" id="dl-txt-btn">📄 Descargar perfil en .txt</button>`;}
+
+// ── EVENTOS ──
+function attachEvents(){
+  const $=id=>document.getElementById(id);
+  if(phase==='intro'){
+    $('start-btn').onclick=()=>{phase='form';render();window.scrollTo(0,0);};
+  }
+  if(phase==='form'){
+    $('form-back').onclick=()=>{phase='intro';render();window.scrollTo(0,0);};
+    $('form-next').onclick=async()=>{
+      const n=$('f-name').value.trim(),e=$('f-email').value.trim(),
+            a=$('f-age').value.trim(),j=$('f-job').value.trim();
+      if(!n||!e||!a||!j){$('form-err').style.display='block';return;}
+      $('form-err').style.display='none';
+      user={name:n,email:e,age:a,job:j};
+      ans=new Array(QS.length).fill(null);cur=0;phase='test';
+      render();window.scrollTo(0,0);
+    };
+  }
+  if(phase==='test'){
+    document.querySelectorAll('.sb').forEach(b=>{
+      b.onclick=()=>{
+        ans[cur]=parseInt(b.dataset.v);
+        document.querySelectorAll('.sb').forEach(x=>x.classList.remove('sel'));
+        b.classList.add('sel');
+        document.getElementById('next-btn').disabled=false;
+        setTimeout(()=>{
+          const nb=document.getElementById('next-btn');
+          if(nb&&!nb.disabled)nb.click();
+        },420);
+      };
+    });
+    const nb=$('next-btn'),pb=$('prev-btn');
+    if(nb)nb.onclick=()=>{
+      if(ans[cur]===null)return;
+      if(cur<QS.length-1){cur++;render();window.scrollTo(0,0);}
+      else{
+        result=calcScores();
+        sendToSheet(result);
+        marcarCompletado(user.name,'Tipo '+result.top+' \u2014 '+T[result.top].name);
+        phase='result';render();window.scrollTo(0,0);
+      }
+    };
+    if(pb)pb.onclick=()=>{if(cur>0){cur--;render();window.scrollTo(0,0);}};
+  }
+  if(phase==='result'){
+    const dlBtn=$('dl-btn');
+    const dlTxtBtn=$('dl-txt-btn');
+    if(dlBtn)dlBtn.onclick=()=>{ downloadPDF(); };
+    if(dlTxtBtn)dlTxtBtn.onclick=()=>{
+      if(!result)return;
+      const txt=buildTxt(result);
+      const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      const nombre=user.name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+      a.download='perfil_eneagrama_'+nombre+'.txt';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+    };
+  }
+}
+
+function mostrarPerfilMovil(){
+  if(!result)return;
+  const r=result;
+  const t=T[r.top],wt=T[r.wing];
+  const stL={cons:'Conservación',soc:'Social',sex:'Sexual'};
+  const stI={cons:'🏠',soc:'👥',sex:'❤️'};
+  const trL={mental:'Tríada Mental (5·6·7)',emocional:'Tríada Emocional (2·3·4)',visceral:'Tríada Visceral (8·9·1)'};
+  const date=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
+  const maxS=Math.max(...Object.values(r.sc));
+  const bars=r.sorted.map(([tp,s])=>{
+    const p=maxS>0?Math.round((s/maxS)*100):0;
+    const isT=parseInt(tp)===r.top;
+    return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:12px;width:110px;flex-shrink:0;color:${isT?t.cb:'#4a4a4a'};font-weight:${isT?700:400}">${T[tp].alias}</span><div style="flex:1;height:5px;background:#e0dbd0;border-radius:3px"><div style="width:${p}%;height:5px;border-radius:3px;background:${isT?t.cb:'#ccc'}"></div></div><span style="font-size:11px;color:#888">${s}</span></div>`;
+  }).join('');
+  // Remove existing overlay if any
+  const existing=document.getElementById('perfil-movil');
+  if(existing)existing.remove();
+  const perfil=document.createElement('div');
+  perfil.id='perfil-movil';
+  perfil.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 30px;font-family:system-ui,sans-serif;font-size:14px;color:#0f0f0f';
+  perfil.innerHTML=`
+    <button onclick="document.getElementById('perfil-movil').remove()" style="width:100%;padding:12px;background:#f0ebe3;color:#0f0f0f;border:none;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:14px;cursor:pointer">← Volver al test</button>
+    <div style="background:#fffbe6;border:1px solid #f0d060;border-radius:8px;padding:10px;margin-bottom:14px;font-size:12px;color:#7a6000;text-align:center">📱 Para guardar: toca <strong>Compartir ↑</strong> → <strong>"Imprimir"</strong> → icono PDF</div>
+    <div style="background:${t.col};border-radius:12px;padding:20px;margin-bottom:14px;border:1px solid ${t.cb}">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:${t.ct};opacity:.7;margin-bottom:8px">RENACER · ${date}</div>
+      <div style="font-size:42px;font-weight:700;color:${t.ct};line-height:1">${r.top}</div>
+      <div style="font-size:20px;font-weight:600;color:${t.ct};margin:4px 0 2px">${t.name}</div>
+      <div style="font-size:11px;color:${t.ct};opacity:.7;margin-bottom:8px">${t.alias} · ${trL[t.triada]}</div>
+      <div style="font-size:12px;color:${t.ct};opacity:.85;line-height:1.7">${t.herida.split('.')[0]}.</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Tu perfil</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Nombre</div><div style="font-size:12px;font-weight:500">${user.name}</div></div>
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Fecha</div><div style="font-size:12px;font-weight:500">${date}</div></div>
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Miedo central</div><div style="font-size:12px;font-weight:500">${t.miedo}</div></div>
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Deseo profundo</div><div style="font-size:12px;font-weight:500">${t.deseo}</div></div>
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Ala dominante</div><div style="font-size:12px;font-weight:500">Ala ${r.wing} — ${wt.name}</div></div>
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Subtipo</div><div style="font-size:12px;font-weight:500">${stI[r.topSt]} ${stL[r.topSt]}</div></div>
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Pasión</div><div style="font-size:12px;font-weight:500">${t.pasion}</div></div>
+        <div style="background:#f7f4ef;border-radius:8px;padding:9px"><div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:3px">Virtud</div><div style="font-size:12px;font-weight:500">${t.virtud}</div></div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Herida y mecanismo de defensa</div>
+      <div style="border-left:3px solid ${t.cb};padding-left:12px;margin-bottom:10px"><div style="font-size:9px;text-transform:uppercase;color:${t.cb};font-weight:700;margin-bottom:3px">Herida emocional</div><div style="font-size:12px;color:#4a4a4a;line-height:1.7">${t.herida}</div></div>
+      <div style="border-left:3px solid ${t.cb};padding-left:12px;margin-bottom:10px"><div style="font-size:9px;text-transform:uppercase;color:${t.cb};font-weight:700;margin-bottom:3px">Mecanismo de defensa</div><div style="font-size:12px;color:#4a4a4a;line-height:1.7">${t.mecanismo}</div></div>
+      <div style="border-left:3px solid ${t.cb};padding-left:12px"><div style="font-size:9px;text-transform:uppercase;color:${t.cb};font-weight:700;margin-bottom:3px">En las relaciones</div><div style="font-size:12px;color:#4a4a4a;line-height:1.7">${t.relaciones}</div></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Integración y desintegración</div>
+      <div style="background:#f7f4ef;border-radius:8px;padding:12px;margin-bottom:8px"><div style="font-size:9px;text-transform:uppercase;color:#1D9E75;font-weight:700;margin-bottom:5px">↑ En crecimiento — Tipo ${t.int}: ${T[t.int].name}</div><div style="font-size:12px;color:#4a4a4a;margin-bottom:6px">${t.intDesc}</div>${t.signInt.map(s=>`<div style="font-size:12px;color:#1D9E75;padding:2px 0 2px 10px;border-left:2px solid #1D9E75;margin-bottom:3px">✓ ${s}</div>`).join('')}</div>
+      <div style="background:#f7f4ef;border-radius:8px;padding:12px"><div style="font-size:9px;text-transform:uppercase;color:#D85A30;font-weight:700;margin-bottom:5px">↓ Bajo estrés — Tipo ${t.des}: ${T[t.des].name}</div><div style="font-size:12px;color:#4a4a4a;margin-bottom:6px">${t.desDesc}</div>${t.signDes.map(s=>`<div style="font-size:12px;color:#D85A30;padding:2px 0 2px 10px;border-left:2px solid #D85A30;margin-bottom:3px">⚠ ${s}</div>`).join('')}</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Subtipos instintivos</div>
+      <div style="background:#f7f4ef;border-radius:8px;padding:12px;margin-bottom:7px"><div style="font-size:9px;text-transform:uppercase;color:${t.cb};font-weight:700;margin-bottom:5px">🏠 Conservación</div><div style="font-size:12px;color:#4a4a4a">${t.st.cons}</div></div>
+      <div style="background:#f7f4ef;border-radius:8px;padding:12px;margin-bottom:7px"><div style="font-size:9px;text-transform:uppercase;color:${t.cb};font-weight:700;margin-bottom:5px">👥 Social</div><div style="font-size:12px;color:#4a4a4a">${t.st.soc}</div></div>
+      <div style="background:#f7f4ef;border-radius:8px;padding:12px"><div style="font-size:9px;text-transform:uppercase;color:${t.cb};font-weight:700;margin-bottom:5px">❤️ Sexual</div><div style="font-size:12px;color:#4a4a4a">${t.st.sex}</div></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Fortalezas y sombras</div>
+      <div style="font-size:9px;text-transform:uppercase;color:${t.cb};font-weight:700;margin-bottom:5px">Fortalezas</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">${t.fortalezas.map(f=>`<span style="padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid ${t.cb};color:${t.cb}">${f}</span>`).join('')}</div>
+      <div style="font-size:9px;text-transform:uppercase;color:#888;font-weight:700;margin-bottom:5px">Sombras</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">${t.sombras.map(f=>`<span style="padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid #ddd;color:#4a4a4a">${f}</span>`).join('')}</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Frases que suelen resonar</div>
+      ${t.frases.map(f=>`<div style="font-style:italic;font-size:13px;color:#4a4a4a;border-left:2px solid ${t.cb};padding-left:12px;margin-bottom:8px;line-height:1.6">"${f}"</div>`).join('')}
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Recomendaciones de evolución</div>
+      ${t.recomendaciones.map((rec,i)=>`<div style="background:#f7f4ef;border-radius:8px;padding:12px;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:${t.cb};margin-bottom:4px">${i+1}. ${rec.t}</div><div style="font-size:11px;color:#4a4a4a;line-height:1.65">${rec.d}</div></div>`).join('')}
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;border-bottom:2px solid ${t.cb};padding-bottom:6px;margin-bottom:10px">Distribución por tipo</div>
+      ${bars}
+    </div>
+    <div style="text-align:center;padding:16px 0;font-size:11px;color:#aaa;border-top:1px solid #e0dbd0;margin-bottom:14px">RENACER — Test de Eneagrama · Perfil de ${user.name} · ${date}</div>
+    <button onclick="document.getElementById('perfil-movil').remove()" style="width:100%;padding:14px;background:#0f0f0f;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Volver</button>
+  `;
+  document.body.appendChild(perfil);
+  window.scrollTo(0,0);
+  perfil.scrollTop=0;
+}
+
+function downloadPDFMobile(){
+  // Ya no se usa — todo va por downloadPDF() unificado
+  downloadPDF();
+}
+
+
+validarAcceso();</script>
+</body>
+</html>
