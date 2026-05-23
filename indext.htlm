@@ -186,10 +186,11 @@ h1 em{font-style:italic;color:var(--gold)}
 // ⚙️  CONFIGURACIÓN
 // ══════════════════════════════════════════════════════════
 const CONFIG = {
-  SHEET_URL: "https://script.google.com/macros/s/AKfycbwlsumx9dY5VU4vEKzA1YO2D1xa_AG3fVQBLgn1awX49dny6OtfzHR3MztpsKOrsalk/exec",
-  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwlsumx9dY5VU4vEKzA1YO2D1xa_AG3fVQBLgn1awX49dny6OtfzHR3MztpsKOrsalk/exec",
-  BRAND: "RENACER — Test de Eneagrama"
+  API_BASE: "https://renacer-test.vercel.app",
+BRAND: "RENACER — Test de Eneagrama"
 };
+const TOKEN_URL = new URLSearchParams(window.location.search).get('token') || '';
+
 
 // ── TIPOS ──
 const T={
@@ -556,7 +557,7 @@ async function sendToSheet(r){
     puntaje_t4:r.sc[4],puntaje_t5:r.sc[5],puntaje_t6:r.sc[6],
     puntaje_t7:r.sc[7],puntaje_t8:r.sc[8],puntaje_t9:r.sc[9],
     respuestas:JSON.stringify(ans),
-    codigo:codigoURL
+    codigo:TOKEN_URL
   };
   try{
     await fetch(CONFIG.SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -896,7 +897,7 @@ async function downloadPDF() {
 // Valida el código en la URL contra Google Sheets
 // ══════════════════════════════════════════════════════════
 
-let codigoURL = new URLSearchParams(window.location.search).get('codigo') || '';
+let TOKEN_URL = new URLSearchParams(window.location.search).get('codigo') || '';
 let linkValido = false;
 let linkValidado = false;
 
@@ -955,7 +956,7 @@ function rValidando() {
 }
 
 async function validarAcceso() {
-  if (!codigoURL) {
+  if (!TOKEN_URL) {
     linkValido = false;
     linkValidado = true;
     render();
@@ -966,7 +967,7 @@ async function validarAcceso() {
   document.getElementById('root').innerHTML = `<div class="wrap">${rValidando()}</div>`;
 
   try {
-    const url = CONFIG.SCRIPT_URL + '?codigo=' + encodeURIComponent(codigoURL) + '&callback=cb_' + Date.now();
+    const url = CONFIG.API_BASE + '/api/validate' + '?codigo=' + encodeURIComponent(TOKEN_URL) + '&callback=cb_' + Date.now();
     await new Promise((resolve) => {
       const cbName = 'renacerCb_' + Date.now();
       const script = document.createElement('script');
@@ -986,7 +987,7 @@ async function validarAcceso() {
         linkValidado = true;
         resolve();
       };
-      script.src = CONFIG.SCRIPT_URL + '?codigo=' + encodeURIComponent(codigoURL) + '&callback=' + cbName;
+      script.src = CONFIG.API_BASE + '/api/validate' + '?codigo=' + encodeURIComponent(TOKEN_URL) + '&callback=' + cbName;
       script.onerror = () => {
         // Si falla la red, dejar pasar (no bloquear por error de red)
         linkValido = true;
@@ -1010,13 +1011,13 @@ function yaCompletado() {
   // Solo bloquear en intro — nunca interrumpir el test ni el resultado
   if (phase === 'test' || phase === 'result') return false;
   if (!linkValidado) return false;
-  if (!codigoURL) return true;
+  if (!TOKEN_URL) return true;
   if (!linkValido) return true;
   return false;
 }
 
 function rBloqueado() {
-  if (!codigoURL) return rBloqueadoInvalido();
+  if (!TOKEN_URL) return rBloqueadoInvalido();
   if (linkRazon === 'ya_usado') return rBloqueadoUsado(linkNombre);
   if (linkRazon === 'expirado') return rBloqueadoExpirado(linkNombre);
   return rBloqueadoInvalido();
@@ -1026,7 +1027,7 @@ function render(){
   const root=document.getElementById('root');
   let h='';
   // Solo bloquear si estamos en intro Y el link no es válido
-  if(phase==='intro' && linkValidado && (!codigoURL || !linkValido)){
+  if(phase==='intro' && linkValidado && (!TOKEN_URL || !linkValido)){
     h=rBloqueado();
   } else if(phase==='intro')h=rIntro();
   else if(phase==='form')h=rForm();
