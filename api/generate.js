@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   }
 
   const baseURL = process.env.BASE_URL || 'https://renacer-test.vercel.app';
-  const link = `${baseURL}/test?token=${token}`;
+  const link = `${baseURL}/?token=${token}`;
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 
