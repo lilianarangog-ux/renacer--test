@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, motivo: 'error_db' });
   }
 
-  const baseURL = process.env.BASE_URL || 'https://tudominio.com';
+  const baseURL = process.env.BASE_URL || 'https://renacer-test.vercel.app';
   const link = `${baseURL}?token=${token}`;
 
   const resend = new Resend(process.env.RESEND_API_KEY);
